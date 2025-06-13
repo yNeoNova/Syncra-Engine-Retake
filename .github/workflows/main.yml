@@ -56,4 +56,4 @@ jobs:
           name: Nightly Build
           files: release_apks/*.apk
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ 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 }}
