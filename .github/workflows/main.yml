@@ -1,4 +1,4 @@
-name: Build Android & Deploy Website
+name: Android Build and Upload to file.io
 
 on:
   push:
@@ -7,12 +7,12 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-    name: Build Android APKs
+  build-android:
+    name: Build Android APK and Upload
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Haxe
@@ -20,17 +20,17 @@ jobs:
         with:
           haxe-version: 4.3.3
 
-      - name: Setup Java
+      - name: Install JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Android SDK
+      - name: Install Android SDK dependencies
         uses: android-actions/setup-android@v3
 
       - name: Install jq
-        run: sudo apt-get install -y jq
+        run: sudo apt-get install jq
 
       - name: Make build scripts executable
         run: chmod +x art/buildScripts/android/*.sh
@@ -41,40 +41,14 @@ jobs:
       - name: Build 64-bit APK
         run: bash art/buildScripts/android/build_x64.sh
 
-      - name: Find APKs for debugging
-        run: find . -type f -name "*.apk"
-
-      - name: Copy APKs to docs/builds
+      - name: Find APKs
+        id: find_apks
         run: |
-          mkdir -p docs/builds
-          cp export/android/bin/app/build/outputs/apk/debug/*.apk docs/builds/ || echo "No APKs found"
+          APK_PATH=$(find . -name "*.apk" | head -n 1 || true)
+          echo "apk_file=$APK_PATH" >> $GITHUB_OUTPUT
 
-      - name: List docs/builds for debugging
-        run: ls -lh docs/builds
-
-      - name: Push to main branch (APK files)
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Update APK builds"
-          file_pattern: docs/builds/*.apk
-          branch: main
-          push_options: --force
-          commit_user_name: github-actions[bot]
-          commit_user_email: github-actions[bot]@users.noreply.github.com
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          publish_dir: ./docs
+      - name: Upload APK to file.io
+        if: steps.find_apks.outputs.apk_file != ''
+        run: |
+          echo "Uploading APK: ${{ steps.find_apks.outputs.apk_file }}"
+          curl -F "file=@${{ steps.find_apks.outputs.apk_file }}" https://file.io
