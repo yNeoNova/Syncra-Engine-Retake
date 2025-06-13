@@ -1,15 +1,18 @@
-name: Build and Upload APKs
+name: Build Android & Deploy Website
 
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build-android:
+  build:
+    name: Build Android APKs
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Haxe
@@ -17,17 +20,17 @@ jobs:
         with:
           haxe-version: 4.3.3
 
-      - name: Install JDK
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Android SDK dependencies
+      - name: Install Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install jq
-        run: sudo apt-get install jq
+        run: sudo apt-get install -y jq
 
       - name: Make build scripts executable
         run: chmod +x art/buildScripts/android/*.sh
@@ -38,19 +41,40 @@ jobs:
       - name: Build 64-bit APK
         run: bash art/buildScripts/android/build_x64.sh
 
-      - name: Debug List APK locations
+      - name: Find APKs for debugging
         run: find . -type f -name "*.apk"
 
-      - name: Prepare docs/builds folder
-        run: mkdir -p docs/builds
-
       - name: Copy APKs to docs/builds
-        run: cp export/android/bin/app/build/outputs/apk/debug/*.apk docs/builds/ || echo "No APKs found"
-
-      - name: Commit APKs to repository
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/builds/*.apk || echo "No APKs to add"
-          git commit -m "Add latest APK builds [auto]" || echo "No changes to commit"
-          git push origin main || echo "Nothing to push"
+          mkdir -p docs/builds
+          cp export/android/bin/app/build/outputs/apk/debug/*.apk docs/builds/ || echo "No APKs found"
+
+      - name: List docs/builds for debugging
+        run: ls -lh docs/builds
+
+      - name: Push to main branch (APK files)
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Update APK builds"
+          file_pattern: docs/builds/*.apk
+          branch: main
+          push_options: --force
+          commit_user_name: github-actions[bot]
+          commit_user_email: github-actions[bot]@users.noreply.github.com
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./docs
