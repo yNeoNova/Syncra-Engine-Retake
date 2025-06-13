@@ -32,6 +32,11 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install jq
 
+      - name: Make Build Scripts executable
+        run: |
+         chmod +x art/buildScripts/build_x32.sh
+         chmod +x art/buildScripts/build_x64.sh
+
       - name: Build 32-bit APK
         run: bash art/buildScripts/build_x32.sh
 
