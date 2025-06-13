@@ -1,0 +1,62 @@
+{
+    "dependencies": [
+    {
+        "name": "haxe",
+        "type": "haxelib",
+        "version": "4.3.3"
+    },
+    {
+        "name": "flixel",
+        "type": "haxelib",
+        "version": "5.5.0"
+    },
+    {
+        "name": "flixel-ui",
+        "type": "haxelib",
+        "version": "2.5.0"
+    },
+    {
+        "name": "flixel-addons",
+        "type": "haxelib",
+        "version": "3.2.1"
+    },
+    {
+        "name": "openfl",
+        "type": "haxelib",
+        "version": "9.3.2"
+    },
+    {
+        "name": "lime",
+        "type": "haxelib",
+        "version": "8.0.1"
+    },
+    {
+        "name": "hxcpp",
+        "type": "git",
+        "dir": null,
+        "ref": "master",
+        "url": "https://github.com/HaxeFoundation/hxcpp"
+    },
+    {
+        "name": "hxdiscord_rpc",
+        "type": "git",
+        "dir": null,
+        "ref": "master",
+        "url": "https://github.com/Aidan63/linc_discord-rpc.git"
+    },
+    {
+        "name": "hxCodec",
+        "type": "git",
+        "dir": null,
+        "ref": "master",
+        "url": "https://github.com/polybiusproxy/hxCodec.git"
+    },
+    {
+    "name": "tjson",
+    "type": "git",
+    "dir": null,
+    "ref": "master",
+    "url": "https://github.com/TheDrawingCoder-Gamer/tjson.git"
+    }
+  ]
+}
