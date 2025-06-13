@@ -1,37 +1,42 @@
-bin/bash
+#!/bin/bash
 
-echo "Building Syncra Engine for Android (x86 / 32-bit)..."
+echo "=== Building Android 32-bit APK ==="
 
-if [ ! -f "../../libs.json" ]; then
-    echo "ERROR: libs.json not found in project root!"
-    exit 1
-fi
+# Install dependencies
+echo "Installing Haxelib dependencies from libs.json..."
 
-echo "Installing dependencies from libs.json..."
+LIBS_JSON="../../libs.json"
 
 if ! command -v jq &> /dev/null; then
-    echo "jq not found. Please install jq to parse JSON."
+    echo "jq is required but not installed. Please install jq."
     exit 1
 fi
 
-cat ../../libs.json | jq -c '.dependencies[]' | while read -r dep; do
-    NAME=$(echo $dep | jq -r '.name')
-    TYPE=$(echo $dep | jq -r '.type')
-    VERSION=$(echo $dep | jq -r '.version // empty')
-    URL=$(echo $dep | jq -r '.url // empty')
-    REF=$(echo $dep | jq -r '.ref // empty')
+jq -c '.dependencies[]' "$LIBS_JSON" | while read -r lib; do
+    NAME=$(echo "$lib" | jq -r '.name')
+    TYPE=$(echo "$lib" | jq -r '.type')
+    VERSION=$(echo "$lib" | jq -r '.version')
+    REF=$(echo "$lib" | jq -r '.ref // empty')
+    URL=$(echo "$lib" | jq -r '.url // empty')
 
     if [ "$TYPE" == "haxelib" ]; then
-        echo "Installing $NAME ($VERSION)..."
-        haxelib install "$NAME" "$VERSION" --quiet
+        if [ "$VERSION" != "null" ] && [ "$VERSION" != "" ]; then
+            haxelib install "$NAME" "$VERSION"
+        else
+            haxelib install "$NAME"
+        fi
     elif [ "$TYPE" == "git" ]; then
-        echo "Installing $NAME from $URL ($REF)..."
-        haxelib git "$NAME" "$URL" "$REF" --quiet
-    else
-        echo "Unknown dependency type: $TYPE"
+        if [ "$URL" != "" ]; then
+            if [ "$REF" != "" ]; then
+                haxelib git "$NAME" "$URL" "$REF"
+            else
+                haxelib git "$NAME" "$URL"
+            fi
+        fi
     fi
 done
 
+# Build APK
 lime build android -32
 
-echo "Android 32-bit build complete!"
+echo "=== Build complete! APK for 32-bit generated. ==="
