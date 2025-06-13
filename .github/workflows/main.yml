@@ -1,14 +1,14 @@
-name: Android CI
+name: Android Build
 
 on:
   push:
-    branches:
-      - main
-    tags:
-      - 'v*.*.*'
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  build:
+  build-android:
+    name: Build Android APKs
     runs-on: ubuntu-latest
 
     steps:
@@ -41,30 +41,20 @@ jobs:
       - name: Build 64-bit APK
         run: bash art/buildScripts/android/build_x64.sh
 
-      - name: Upload built APKs as artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload 32-bit APK
+        if: ${{ success() }}
+        uses: actions/upload-artifact@main
         with:
-          name: SyncraEngine-APKs
+          name: SyncraEngine-Android-x32
           path: |
-            **/outputs/apk/**/*.apk
+            export/release/android/bin/app/build/outputs/apk/release/*.apk
 
-  release:
-    name: Create GitHub Release with APKs
-    runs-on: ubuntu-latest
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+          if-no-files-found: error
 
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Upload APKs to Release
-        uses: nikhilsharma-github-action/github-action-release-apk@v1.2.0
+      - name: Upload 64-bit APK
+        if: ${{ success() }}
+        uses: actions/upload-artifact@main
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          releaseName: "Syncra Engine Android Release"
-          tagName: ${{ github.ref_name }}
-          files: "**/outputs/apk/**/*.apk"
+          name: SyncraEngine-Android-x64
+          path: |
+            export/release/android/bin/app/build/outputs/apk/release/*.apk
