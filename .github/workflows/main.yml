@@ -1,0 +1,51 @@
+name: Android Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-android:
+    name: Build Android APKs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.3.3
+
+      - name: Install JDK (required for Android build)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Android SDK dependencies
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: sudo apt-get install jq
+
+      - name: Build 32-bit APK
+        run: bash art/buildScripts/build_x32.sh
+
+      - name: Build 64-bit APK
+        run: bash art/buildScripts/build_x64.sh
+
+      - name: Upload 32-bit APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SyncraEngine-Android-x32
+          path: export/android/bin/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Upload 64-bit APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SyncraEngine-Android-x64
+          path: export/android/bin/app/build/outputs/apk/debug/app-debug.apk
