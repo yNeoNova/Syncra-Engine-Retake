@@ -29,13 +29,11 @@ jobs:
       - name: Install Android SDK dependencies
         uses: android-actions/setup-android@v3
 
-      - name: Install dependencies
+      - name: Install jq dependency
         run: sudo apt-get install jq
 
       - name: Make build scripts executable
-        run: |
-          chmod +x art/buildScripts/android/build_x32.sh
-          chmod +x art/buildScripts/android/build_x64.sh
+        run: chmod +x art/buildScripts/android/*.sh
 
       - name: Build 32-bit APK
         run: bash art/buildScripts/android/build_x32.sh
@@ -43,17 +41,16 @@ jobs:
       - name: Build 64-bit APK
         run: bash art/buildScripts/android/build_x64.sh
 
-      - name: Rename APKs for clarity
-        run: |
-          mkdir -p release_apks
-          find . -name "app-debug.apk" | head -n1 | xargs -I {} cp {} release_apks/SyncraEngine-x32.apk
-          find . -name "app-debug.apk" | tail -n1 | xargs -I {} cp {} release_apks/SyncraEngine-x64.apk
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Upload 32-bit APK
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: nightly
-          name: Nightly Build
-          files: release_apks/*.apk
-        env:
-          GITHUB_TOKEN: ${{ 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 }}
+          name: SyncraEngine-Android-x32
+          path: |
+            **/outputs/apk/debug/*.apk
+
+      - name: Upload 64-bit APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SyncraEngine-Android-x64
+          path: |
+            **/outputs/apk/debug/*.apk
