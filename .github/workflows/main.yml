@@ -3,12 +3,9 @@ name: Build and Upload APKs
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build-android:
-    name: Build Android APKs
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +17,7 @@ jobs:
         with:
           haxe-version: 4.3.3
 
-      - name: Install JDK (required for Android build)
+      - name: Install JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -29,7 +26,7 @@ jobs:
       - name: Install Android SDK dependencies
         uses: android-actions/setup-android@v3
 
-      - name: Install jq dependency
+      - name: Install jq
         run: sudo apt-get install jq
 
       - name: Make build scripts executable
@@ -41,12 +38,14 @@ jobs:
       - name: Build 64-bit APK
         run: bash art/buildScripts/android/build_x64.sh
 
+      - name: Debug List APK locations
+        run: find . -type f -name "*.apk"
+
       - name: Prepare docs/builds folder
         run: mkdir -p docs/builds
 
-      - name: Copy APKs to docs/builds/
-        run: |
-          find . -type f -name "*.apk" -exec cp {} docs/builds/ \;
+      - name: Copy APKs to docs/builds
+        run: cp export/android/bin/app/build/outputs/apk/debug/*.apk docs/builds/ || echo "No APKs found"
 
       - name: Commit APKs to repository
         run: |
