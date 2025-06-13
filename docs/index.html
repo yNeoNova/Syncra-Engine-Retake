@@ -3,112 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Syncra Engine APK Downloads</title>
+  <title>SyncraEngine Downloads</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: sans-serif;
-      background: url('art/websiteAssets/syncraBG.png') no-repeat center center fixed;
+      background-image: url('websiteAssets/syncraBG.png');
       background-size: cover;
+      font-family: sans-serif;
       color: #fff;
     }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2rem;
-      padding: 2rem;
+    .app-container {
+      background-color: rgba(128,0,128,0.8);
+      padding: 1rem;
+      margin: 2rem;
+      border-radius: 10px;
+      max-width: 400px;
     }
-
-    .app-card {
-      background-color: rgba(128, 0, 128, 0.8);
-      border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .header img {
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
-    }
-
-    .info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .info span {
-      margin-bottom: 0.3rem;
-    }
-
-    .desc {
-      margin-bottom: 1rem;
-    }
-
     .download-btn {
       display: inline-block;
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
       background-color: #fff;
       color: #800080;
+      border-radius: 5px;
       text-decoration: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
       font-weight: bold;
-      transition: background 0.3s;
-    }
-
-    .download-btn:hover {
-      background-color: #ddd;
-    }
-
-    .empty-message {
-      background-color: rgba(0,0,0,0.6);
-      padding: 1rem 2rem;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 1.2rem;
-      text-align: center;
-      margin-top: 2rem;
     }
   </style>
 </head>
 <body>
+  <div class="app-container">
+    <h2>Name: Syncra Engine</h2>
+    <img src="websiteAssets/icon512.png" alt="App Icon" width="64" />
+    <p>Description: Experimental Engine for Android and Desktop</p>
 
-  <div class="container">
-
-    <!-- Example App Card (Visible when APKs exist) -->
-    <!-- Duplicate this .app-card block for each APK -->
-    <!-- REMOVE OR COMMENT THIS IF NO APK IS AVAILABLE YET -->
-    <div class="app-card">
-      <div class="header">
-        <img src="art/websiteAssets/icon512.png" alt="App Icon" />
-        <div class="info">
-          <span><strong>Name:</strong> Syncra Engine 32-bit</span>
-        </div>
-      </div>
-      <div class="desc">
-        Example description for the 32-bit build APK.
-      </div>
-      <a class="download-btn" href="REPLACE_WITH_APK_LINK" download>Download APK</a>
+    <div>
+      <h3>32-bit APK:</h3>
+      <a href="builds/SyncraEngine-Android-x32.apk" class="download-btn">Download 32-bit</a>
     </div>
 
-    <!-- Empty state -->
-    <div class="empty-message">
-      No APK uploaded.
+    <div>
+      <h3>64-bit APK:</h3>
+      <a href="builds/SyncraEngine-Android-x64.apk" class="download-btn">Download 64-bit</a>
     </div>
-
   </div>
-
 </body>
-  </html>
+</html>
