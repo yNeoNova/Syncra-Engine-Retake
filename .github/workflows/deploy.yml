@@ -1,25 +1,27 @@
-name: Deploy Website
+name: Deploy Website to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy:
+    name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup website folder
-        run: |
-          rm -rf docs/
-          mkdir -p docs/
-          cp -r art/websiteAssets/* docs/
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact (website)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: actions/deploy-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          token: ${{ secrets.GH_PAGES_TOKEN }}
