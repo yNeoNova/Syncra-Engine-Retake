@@ -5,7 +5,7 @@ echo "=== Building Android 32-bit APK ==="
 # Install dependencies
 echo "Installing Haxelib dependencies from libs.json..."
 
-LIBS_JSON="../../libs.json"
+LIBS_JSON="libs.json"
 
 if ! command -v jq &> /dev/null; then
     echo "jq is required but not installed. Please install jq."
