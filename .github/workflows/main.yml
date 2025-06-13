@@ -47,10 +47,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SyncraEngine-Android-x32
-          path: export/android/bin/app/build/outputs/apk/debug/app-debug.apk
+          path: export/android/bin/app/build/outputs/apk/debug/*.apk
 
       - name: Upload 64-bit APK
         uses: actions/upload-artifact@v4
         with:
           name: SyncraEngine-Android-x64
-          path: export/android/bin/app/build/outputs/apk/debug/app-debug.apk
+          path: export/android/bin/app/build/outputs/apk/debug/*.apk
