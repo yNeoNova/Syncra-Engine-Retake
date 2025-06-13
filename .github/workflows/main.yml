@@ -1,4 +1,4 @@
-name: Android Build
+name: Build and Upload APKs
 
 on:
   push:
@@ -41,20 +41,17 @@ jobs:
       - name: Build 64-bit APK
         run: bash art/buildScripts/android/build_x64.sh
 
-      - name: Upload 32-bit APK
-        if: ${{ success() }}
-        uses: actions/upload-artifact@main
-        with:
-          name: SyncraEngine-Android-x32
-          path: |
-            export/release/android/bin/app/build/outputs/apk/release/*.apk
+      - name: Prepare docs/builds folder
+        run: mkdir -p docs/builds
 
-          if-no-files-found: error
+      - name: Copy APKs to docs/builds/
+        run: |
+          find . -type f -name "*.apk" -exec cp {} docs/builds/ \;
 
-      - name: Upload 64-bit APK
-        if: ${{ success() }}
-        uses: actions/upload-artifact@main
-        with:
-          name: SyncraEngine-Android-x64
-          path: |
-            export/release/android/bin/app/build/outputs/apk/release/*.apk
+      - name: Commit APKs to repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/builds/*.apk || echo "No APKs to add"
+          git commit -m "Add latest APK builds [auto]" || echo "No changes to commit"
+          git push origin main || echo "Nothing to push"
