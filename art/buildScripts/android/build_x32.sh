@@ -40,7 +40,7 @@ done
 lime build android -32
 
 # Define output path
-OUTPUT_DIR="../../docs/builds"
+OUTPUT_DIR="/docs/builds"
 mkdir -p "$OUTPUT_DIR"
 
 # Find the APK and move it to OUTPUT_DIR
