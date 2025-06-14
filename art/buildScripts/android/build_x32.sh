@@ -39,4 +39,17 @@ done
 # Build APK
 lime build android -32
 
+# Define output path
+OUTPUT_DIR="../../docs/builds"
+mkdir -p "$OUTPUT_DIR"
+
+# Find the APK and move it to OUTPUT_DIR
+APK_PATH=$(find export/ -type f -name "*.apk" | head -n 1)
+
+if [ -f "$APK_PATH" ]; then
+    cp "$APK_PATH" "$OUTPUT_DIR/SyncraEngine-x32.apk"
+    echo "APK copied to $OUTPUT_DIR/SyncraEngine-x32.apk"
+else
+    echo "No APK generated."
+fi
 echo "=== Build complete! APK for 32-bit generated. ==="
