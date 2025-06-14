@@ -1,5 +1,9 @@
 name: Android Build and Upload to file.io
 
+permissions:
+  contents: write
+  releases: write
+
 on:
   push:
     branches: [ main ]
@@ -39,27 +43,31 @@ jobs:
         run: bash art/buildScripts/android/build_x32.sh
 
       - name: Build 64-bit APK
-        run: bash art/buildScripts/android/build_x64.sh      
-      
+        run: bash art/buildScripts/android/build_x64.sh  
+
+      # Release steps only run on push to main branch
       - name: Create Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
           body: |
             - haha
           draft: false
           prerelease: false
+
       - name: Upload Release Asset
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         id: upload-release-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./my-artifact.zip
           asset_name: my-artifact.zip
           asset_content_type: application/zip
